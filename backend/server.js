@@ -1,5 +1,3 @@
-import 'dotenv/config';
-
 import express from 'express';
 import Stripe from 'stripe';
 import cors from 'cors';
@@ -50,6 +48,7 @@ app.post('/create-checkout-session', async (req, res) => {
     shippingCity,
     shippingState,
     shippingPostalCode,
+    selectedSize, // 👕 added size support
   } = req.body;
 
   console.log('📦 Incoming checkout request:', {
@@ -61,6 +60,7 @@ app.post('/create-checkout-session', async (req, res) => {
     shippingCity,
     shippingState,
     shippingPostalCode,
+    selectedSize,
   });
 
   const totalPrice = product.price * quantity;
@@ -78,7 +78,7 @@ app.post('/create-checkout-session', async (req, res) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: product.name,
+              name: `${product.name} (${selectedSize})`, // 👕 show size in Stripe
               description: product.description,
               images: [product.image],
             },
@@ -87,10 +87,11 @@ app.post('/create-checkout-session', async (req, res) => {
           quantity,
         },
       ],
-      success_url: `${process.env.FRONTEND_URL.split(',')[0]}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_URL.split(',')[0]}/cancel`,
+      success_url: `${allowedOrigins[0]}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${allowedOrigins[0]}/cancel`,
       metadata: {
         productName: product.name,
+        productSize: selectedSize,
         quantity: String(quantity),
         shippingName,
         shippingAddressLine1,
@@ -100,10 +101,12 @@ app.post('/create-checkout-session', async (req, res) => {
       },
     });
 
-    console.log('✅ Stripe session created:', session);
+    console.log('✅ Stripe session created:', session.id);
 
     await insertOrder({
+      product_id: product.id,
       product_name: product.name,
+      product_size: selectedSize,
       quantity,
       total_price: totalPrice,
       status: 'initiated',
@@ -124,6 +127,7 @@ app.post('/create-checkout-session', async (req, res) => {
 
     await insertOrder({
       product_name: product?.name || 'unknown',
+      product_size: selectedSize || 'unknown',
       quantity: 1,
       total_price: product?.price || 0,
       status: 'failed',
@@ -158,6 +162,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     const sessionId = session.id;
     const email = session.customer_email || 'unknown';
     const product_name = session.metadata?.productName || 'unknown';
+    const product_size = session.metadata?.productSize || 'unknown';
 
     const name = session.metadata?.shippingName;
     const address = {
@@ -168,10 +173,8 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     };
 
     console.log('🔍 Session ID:', sessionId);
-    console.log('📦 Product:', product_name);
+    console.log('📦 Product:', product_name, '👕 Size:', product_size);
     console.log('📧 Email:', email);
-    console.log('📬 Shipping name:', name);
-    console.log('🏠 Shipping address:', address);
 
     const { data: existingOrder, error: fetchError } = await supabase
       .from('orders')
@@ -188,6 +191,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
         status: 'completed',
         email,
         product_name,
+        product_size,
         shipping_name: name,
         shipping_address: JSON.stringify(address),
       };

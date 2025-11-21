@@ -1,5 +1,5 @@
-import dotenv from 'dotenv';
-dotenv.config(); // ✅ Ensures env vars are loaded before use
+// import dotenv from 'dotenv';
+// dotenv.config(); // ✅ Ensures env vars are loaded before use
 
 import { createClient } from '@supabase/supabase-js';
 

@@ -1,46 +1,15 @@
 import React, { useState } from 'react';
 import './ProductCard.css';
 import '../styles/global.css';
-
-const priceMap = {
-  '8cm': 24.99,
-  '12cm': 29.99,
-  '15cm': 34.99,
-};
-
-const products = [
-  {
-    id: 'moonlight-8cm',
-    size: '8cm',
-    name: 'MoonLight Lamp - 8cm',
-    description: 'Compact cosmic glow. Perfect for desks and small spaces.',
-    image: 'https://relaxusonline.com/cdn/shop/products/518119-Luna-Moon-Lamp_-lifestyle.jpg?v=1755529048',
-    maxQuantity: 10,
-  },
-  {
-    id: 'moonlight-12cm',
-    size: '12cm',
-    name: 'MoonLight Lamp - 12cm',
-    description: 'Balanced size for bedrooms and cozy corners.',
-    image: 'https://relaxusonline.com/cdn/shop/products/518119-Luna-Moon-Lamp_-lifestyle.jpg?v=1755529048',
-    maxQuantity: 10,
-  },
-  {
-    id: 'moonlight-15cm',
-    size: '15cm',
-    name: 'MoonLight Lamp - 15cm',
-    description: 'Larger glow for living rooms or statement gifting.',
-    image: 'https://relaxusonline.com/cdn/shop/products/518119-Luna-Moon-Lamp_-lifestyle.jpg?v=1755529048',
-    maxQuantity: 10,
-  },
-];
+import products from '../data/products'; // assuming you moved product data to a separate file
 
 const ProductCard = () => {
   const [selectedId, setSelectedId] = useState(products[0].id);
+  const [selectedSize, setSelectedSize] = useState(products[0].sizes[0]);
   const [quantity, setQuantity] = useState(1);
 
   const selectedProduct = products.find(p => p.id === selectedId);
-  const basePrice = priceMap[selectedProduct.size];
+  const basePrice = selectedProduct.price;
   const compareAtPrice = basePrice + 10;
   const finalPrice = quantity >= 2 ? basePrice * quantity * 0.9 : basePrice * quantity;
 
@@ -50,6 +19,7 @@ const ProductCard = () => {
         product: {
           ...selectedProduct,
           price: basePrice,
+          selectedSize,
         },
         quantity,
         customerEmail: 'test@example.com',
@@ -93,18 +63,18 @@ const ProductCard = () => {
 
         {/* 🔍 Debug block for live price check */}
         <p style={{ color: 'lime', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-          Debug: Price for {selectedProduct.size} is ${basePrice}
+          Debug: Price is ${basePrice} | Size: {selectedSize}
         </p>
 
-        <label htmlFor="size-select">Choose size:</label>
+        <label htmlFor="size-dropdown">Choose size:</label>
         <select
-          id="size-select"
+          id="size-dropdown"
           className="size-dropdown"
-          value={selectedId}
-          onChange={(e) => setSelectedId(e.target.value)}
+          value={selectedSize}
+          onChange={(e) => setSelectedSize(e.target.value)}
         >
-          {products.map((p) => (
-            <option key={p.id} value={p.id}>{p.size}</option>
+          {selectedProduct.sizes.map((size) => (
+            <option key={size} value={size}>{size}</option>
           ))}
         </select>
 

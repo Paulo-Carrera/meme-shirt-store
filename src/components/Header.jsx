@@ -11,13 +11,13 @@ const Header = () => {
 
   return (
     <header className="site-header">
-      {/* Left side: Logo + SALE badge */}
+      {/* Left side: Logo + Fun badge */}
       <div className="logo-container">
         <div className="logo">
           <a href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-          MoonLight
+            MemeThreads
           </a>
-          <span className="sale-badge">SALE</span>
+          <span className="sale-badge">🔥 New Drop</span>
         </div>
       </div>
 
@@ -27,6 +27,7 @@ const Header = () => {
           <a href="/">Home</a>
           <a href="/checkout">Checkout</a>
           <a href="/contact">Contact</a>
+          <a href="/about">About</a>
         </nav>
 
         <div className="burger-menu" onClick={toggleMenu}>

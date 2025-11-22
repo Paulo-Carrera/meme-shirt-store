@@ -2,96 +2,73 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
-  background: linear-gradient(to right, #1a0033, #3a0066);
-  color: white;
+  background: #111;
+  color: #fff;
+  padding: 1rem 2rem;
+}
+
+.logo-container .logo {
+  font-size: 1.5rem;
+  font-weight: bold;
   position: relative;
-  z-index: 2;
 }
 
-.logo-container {
-  display: flex;
-  align-items: center;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-/* Glowing MoonLight title */
-.logo {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #ffffff;
-  text-shadow: 0 0 10px #ffffff, 0 0 20px #fd746c, 0 0 30px #ffb88c;
-}
-
-/* SALE badge */
 .sale-badge {
-  margin-left: 0.5rem;
-  background: #ff4d4d;
-  color: white;
-  padding: 0.3rem 0.6rem;
+  background: #e63946;
+  color: #fff;
   font-size: 0.8rem;
-  font-weight: bold;
+  padding: 0.2rem 0.5rem;
   border-radius: 6px;
-  box-shadow: 0 0 8px rgba(255, 77, 77, 0.6);
+  margin-left: 0.5rem;
   animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.1); opacity: 0.8; }
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
-/* Nav links with glow on hover */
 .nav-links {
   display: flex;
   gap: 1.5rem;
 }
 
 .nav-links a {
-  color: white;
+  color: #fff;
   text-decoration: none;
-  font-weight: 600;
-  font-size: 1.4rem; /* bump this up from default */
-  transition: all 0.3s ease;
+  font-weight: 500;
 }
 
 .nav-links a:hover {
-  text-shadow: 0 0 8px #ffffff, 0 0 12px #fd746c;
-  transform: scale(1.05);
+  color: #f1c40f;
 }
 
-/* Burger menu */
 .burger-menu {
   display: none;
   flex-direction: column;
-  gap: 5px;
   cursor: pointer;
 }
 
 .burger-menu span {
-  width: 25px;
   height: 3px;
-  background: white;
-  border-radius: 2px;
+  width: 25px;
+  background: #fff;
+  margin: 4px 0;
+  transition: 0.3s;
 }
 
-/* Mobile styles */
+/* Responsive */
 @media (max-width: 768px) {
   .nav-links {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: rgba(26, 0, 51, 0.95);
-    flex-direction: column;
-    align-items: center;
-    padding: 1rem 0;
     display: none;
+    flex-direction: column;
+    background: #222;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    padding: 1rem;
+    border-radius: 8px;
   }
 
   .nav-links.open {

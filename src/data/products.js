@@ -8,6 +8,16 @@ const products = [
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'],
     maxQuantity: 10,
     supplierUrl: 'https://www.aliexpress.com/item/1005006223456789.html'
+  },
+  {
+    id: 'fart-shirt',
+    name: 'Fart Shirt',
+    description: 'If they talk behind yo back, Fart.',
+    price: 21.99,
+    image: 'https://ae-pic-a1.aliexpress-media.com/kf/Sde8b143a8ed9499586cb799348ffc57cU.jpg_960x960q75.jpg_.avif',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    maxQuantity: 10,
+    supplierUrl: 'https://www.aliexpress.com/item/1005006229876543.html'
   }
 ];
 

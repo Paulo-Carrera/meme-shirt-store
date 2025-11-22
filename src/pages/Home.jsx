@@ -30,7 +30,7 @@ const Home = () => {
   return (
     <div className="home-container">
       <main className="home-main gradient-wrapper">
-        <h1 className="home-title">✨ Featured Product ✨</h1>
+        <h1 className="home-title">✨ Featured Products ✨</h1>
 
         <div className="product-grid">
           <div className="product-card shadow-lg rounded-lg">

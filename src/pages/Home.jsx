@@ -1,98 +1,113 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header.jsx';
-import products from '../data/products.js';   // ✅ import your products array
+import products from '../data/products.js';
 import './Home.css';
 import '../styles/global.css';
 
 const Home = () => {
   const navigate = useNavigate();
 
-  // Default to the first product
-  const [selectedId, setSelectedId] = useState(products[0].id);
-  const [selectedSize, setSelectedSize] = useState(products[0].sizes[0]);
-  const [quantity, setQuantity] = useState(1);
+  // Track size and quantity per product
+  const [selectedSizes, setSelectedSizes] = useState(
+    products.reduce((acc, p) => ({ ...acc, [p.id]: p.sizes[0] }), {})
+  );
+  const [quantities, setQuantities] = useState(
+    products.reduce((acc, p) => ({ ...acc, [p.id]: 1 }), {})
+  );
 
-  const selectedProduct = products.find(p => p.id === selectedId);
-  const basePrice = selectedProduct.price;
-  const finalPrice = basePrice * quantity;
-  const compareAtPrice = (basePrice + 10) * quantity;
+  const handleSizeChange = (productId, size) => {
+    setSelectedSizes(prev => ({ ...prev, [productId]: size }));
+  };
 
-  const handleBuyNow = () => {
+  const handleQuantityChange = (productId, qty) => {
+    setQuantities(prev => ({ ...prev, [productId]: qty }));
+  };
+
+  const handleBuyNow = (product) => {
     navigate('/checkout', {
       state: {
-        product: { ...selectedProduct, price: basePrice, selectedSize },
-        quantity,
+        product: { ...product, selectedSize: selectedSizes[product.id] },
+        quantity: quantities[product.id],
       },
     });
   };
 
   return (
     <div className="home-container">
+      <Header />
       <main className="home-main gradient-wrapper">
         <h1 className="home-title">✨ Featured Products ✨</h1>
 
         <div className="product-grid">
-          <div className="product-card shadow-lg rounded-lg">
-            <img
-              src={selectedProduct.image}
-              alt={selectedProduct.name}
-              className="product-image rounded-md"
-            />
+          {products.map((product) => {
+            const basePrice = product.price;
+            const quantity = quantities[product.id];
+            const finalPrice = basePrice * quantity;
+            const compareAtPrice = (basePrice + 10) * quantity;
 
-            <h2 className="product-name">{selectedProduct.name}</h2>
-            <p className="product-description">{selectedProduct.description}</p>
+            return (
+              <div key={product.id} className="product-card shadow-lg rounded-lg">
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="product-image rounded-md"
+                />
 
-            {/* ✅ Size dropdown from product.sizes */}
-            <div className="form-group">
-              <label htmlFor="size-select">Choose size:</label>
-              <select
-                id="size-select"
-                value={selectedSize}
-                onChange={(e) => setSelectedSize(e.target.value)}
-                className="size-dropdown"
-              >
-                {selectedProduct.sizes.map((size) => (
-                  <option key={size} value={size}>{size}</option>
-                ))}
-              </select>
-            </div>
+                <h2 className="product-name">{product.name}</h2>
+                <p className="product-description">{product.description}</p>
 
-            {/* ✅ Quantity input */}
-            <div className="form-group">
-              <label htmlFor="quantity-input">Quantity:</label>
-              <input
-                id="quantity-input"
-                type="number"
-                min="1"
-                max={selectedProduct.maxQuantity}
-                value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
-                className="quantity-input"
-              />
-            </div>
+                {/* Size dropdown */}
+                <div className="form-group">
+                  <label htmlFor={`size-select-${product.id}`}>Choose size:</label>
+                  <select
+                    id={`size-select-${product.id}`}
+                    value={selectedSizes[product.id]}
+                    onChange={(e) => handleSizeChange(product.id, e.target.value)}
+                    className="size-dropdown"
+                  >
+                    {product.sizes.map((size) => (
+                      <option key={size} value={size}>{size}</option>
+                    ))}
+                  </select>
+                </div>
 
-            {/* ✅ Price info */}
-            <div className="price-info">
-              <span className="price-unit">Unit Price: ${basePrice.toFixed(2)}</span>
-              <span className="price-original">Compare at: ${compareAtPrice.toFixed(2)}</span>
-              <span className="price-sale">Total: ${finalPrice.toFixed(2)}</span>
-            </div>
+                {/* Quantity input */}
+                <div className="form-group">
+                  <label htmlFor={`quantity-input-${product.id}`}>Quantity:</label>
+                  <input
+                    id={`quantity-input-${product.id}`}
+                    type="number"
+                    min="1"
+                    max={product.maxQuantity}
+                    value={quantity}
+                    onChange={(e) => handleQuantityChange(product.id, Number(e.target.value))}
+                    className="quantity-input"
+                  />
+                </div>
 
-            <button
-              onClick={handleBuyNow}
-              className="buy-button hover:scale-105 transition-transform"
-            >
-              🛒 Buy Now
-            </button>
+                {/* Price info */}
+                <div className="price-info">
+                  <span className="price-unit">Unit Price: ${basePrice.toFixed(2)}</span>
+                  <span className="price-original">Compare at: ${compareAtPrice.toFixed(2)}</span>
+                  <span className="price-sale">Total: ${finalPrice.toFixed(2)}</span>
+                </div>
 
-            {/* ✅ Supplier link */}
-            <p className="supplier-link">
-              <a href={selectedProduct.supplierUrl} target="_blank" rel="noopener noreferrer">
-                View Supplier
-              </a>
-            </p>
-          </div>
+                <button
+                  onClick={() => handleBuyNow(product)}
+                  className="buy-button hover:scale-105 transition-transform"
+                >
+                  🛒 Buy Now
+                </button>
+
+                <p className="supplier-link">
+                  <a href={product.supplierUrl} target="_blank" rel="noopener noreferrer">
+                    View Supplier
+                  </a>
+                </p>
+              </div>
+            );
+          })}
         </div>
       </main>
     </div>

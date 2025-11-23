@@ -35,7 +35,6 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <Header />
       <main className="home-main gradient-wrapper">
         <h1 className="home-title">✨ Featured Products ✨</h1>
 

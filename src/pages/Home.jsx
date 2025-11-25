@@ -35,6 +35,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
+      <Header /> {/* ✅ Added header for consistency */}
       <main className="home-main gradient-wrapper">
         <h1 className="home-title">✨ Featured Products ✨</h1>
 
@@ -53,7 +54,10 @@ const Home = () => {
                   className="product-image rounded-md"
                 />
 
-                <h2 className="product-name">{product.name}</h2>
+                <h2 className="product-name">
+                  {product.name}
+                  {product.isNew && <span className="new-badge">New!</span>}
+                </h2>
                 <p className="product-description">{product.description}</p>
 
                 {/* Size dropdown */}

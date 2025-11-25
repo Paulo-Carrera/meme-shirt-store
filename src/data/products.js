@@ -18,6 +18,16 @@ const products = [
     sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
     maxQuantity: 10,
     supplierUrl: 'https://www.aliexpress.com/item/1005006229876543.html'
+  },
+  {
+    id:'fih-shirt',
+    name: 'Fih Shirt',
+    description: 'Phone call from Fih',
+    price:24.99,
+    image:'https://ae-pic-a1.aliexpress-media.com/kf/S587082aff86f43e1b6348b188f446229q.jpg_960x960q75.jpg_.avif',
+    sizes: ['S', 'M', 'L', 'XL', '2XL', '3XL'],
+    maxQuantity: 10,
+    supplierUrl: 'https://www.aliexpress.com/item/1005006229876543.html'
   }
 ];
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import products from '../data/products.js';
-import './Checkout.css'; // Add this line to use external styles
+import './Checkout.css';
 
 const Checkout = () => {
   const location = useLocation();
@@ -33,6 +33,8 @@ const Checkout = () => {
     }, 100);
 
     try {
+      const selectedSize = form.selectedSize.value; // 👕 FIX: read size from form
+
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/create-checkout-session`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,6 +47,7 @@ const Checkout = () => {
           shippingCity: form.shippingCity.value,
           shippingState: form.shippingState.value,
           shippingPostalCode: form.shippingPostalCode.value,
+          selectedSize, // 👕 now defined
         }),
       });
 
@@ -85,6 +88,18 @@ const Checkout = () => {
               <img src={selectedProduct.image} alt={selectedProduct.name} className="product-image" />
               <p>{selectedProduct.description}</p>
             </div>
+          )}
+
+          {/* 👕 NEW SIZE SELECTOR */}
+          {selectedProduct?.sizes && (
+            <label className="checkout-label">
+              Size:
+              <select name="selectedSize" required className="checkout-input">
+                {selectedProduct.sizes.map((size) => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+            </label>
           )}
 
           <label className="checkout-label">

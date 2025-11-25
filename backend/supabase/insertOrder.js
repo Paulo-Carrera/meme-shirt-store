@@ -33,30 +33,32 @@ export async function insertOrder({
   shipping_state,
   shipping_postal_code,
 }) {
-  const { data, error } = await supabase
-    .from('orders')
-    .insert([
-      {
-        product_id,
-        product_name,
-        product_size,
-        quantity,
-        total_price,
-        status,
-        email,
-        stripe_session_id,
-        shipping_name,
-        shipping_address_line1,
-        shipping_city,
-        shipping_state,
-        shipping_postal_code,
-        created_at: new Date().toISOString(),
-      },
-    ]);
+  const payload = {
+    product_id,
+    product_name,
+    product_size,
+    quantity,
+    total_price,
+    status,
+    email,
+    stripe_session_id,
+    shipping_name,
+    shipping_address_line1,
+    shipping_city,
+    shipping_state,
+    shipping_postal_code,
+    created_at: new Date().toISOString(),
+  };
+
+  console.log('📝 Supabase insert payload:', payload);
+
+  const { data, error } = await supabase.from('orders').insert([payload]);
 
   if (error) {
     console.error('❌ Supabase insert error:', error.message);
     return null;
   }
+
+  console.log('✅ Order inserted into Supabase:', data);
   return data;
 }

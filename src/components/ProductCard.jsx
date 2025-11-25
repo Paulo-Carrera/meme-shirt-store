@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';   // 👈 import navigate
 import './ProductCard.css';
 import '../styles/global.css';
-import products from '../data/products'; // assuming you moved product data to a separate file
+import products from '../data/products';
 
 const ProductCard = () => {
+  const navigate = useNavigate();   // 👈 hook for navigation
   const [selectedId, setSelectedId] = useState(products[0].id);
   const [selectedSize, setSelectedSize] = useState(products[0].sizes[0]);
   const [quantity, setQuantity] = useState(1);
@@ -13,39 +15,15 @@ const ProductCard = () => {
   const compareAtPrice = basePrice + 10;
   const finalPrice = quantity >= 2 ? basePrice * quantity * 0.9 : basePrice * quantity;
 
-  const handleBuyClick = async () => {
-    try {
-      const orderData = {
-        product: {
-          ...selectedProduct,
-          price: basePrice,
-          selectedSize,
-        },
+  const handleBuyClick = () => {
+    // 👕 Instead of calling backend directly, navigate to checkout
+    navigate('/checkout', {
+      state: {
+        product: selectedProduct,
         quantity,
-        customerEmail: 'test@example.com',
-        shippingName: 'John Doe',
-        shippingAddressLine1: '123 Main St',
-        shippingCity: 'Los Angeles',
-        shippingState: 'CA',
-        shippingPostalCode: '90001',
-      };
-
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/create-checkout-session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData),
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        console.error('❌ No URL returned from Stripe');
-      }
-    } catch (err) {
-      console.error('❌ Error creating Stripe session:', err);
-    }
+        selectedSize,   // 👕 pass size into checkout
+      },
+    });
   };
 
   return (

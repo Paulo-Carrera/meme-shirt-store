@@ -9,10 +9,15 @@ const Checkout = () => {
 
   const initialProduct = location.state?.product || null;
   const initialQuantity = location.state?.quantity || 1;
+  const initialSize =
+    location.state?.selectedSize || (initialProduct?.sizes?.[0] ?? '');
 
-  const [selectedProductId, setSelectedProductId] = useState(initialProduct?.id || products[0].id);
-  const selectedProduct = products.find(p => p.id === selectedProductId);
+  const [selectedProductId, setSelectedProductId] = useState(
+    initialProduct?.id || products[0].id
+  );
+  const selectedProduct = products.find((p) => p.id === selectedProductId);
   const [quantity, setQuantity] = useState(initialQuantity);
+  const [selectedSize, setSelectedSize] = useState(initialSize); // 👕 track size in state
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -25,7 +30,6 @@ const Checkout = () => {
     e.preventDefault();
     if (!selectedProduct) return;
 
-    const form = e.target;
     setLoading(true);
 
     setTimeout(() => {
@@ -33,23 +37,24 @@ const Checkout = () => {
     }, 100);
 
     try {
-      const selectedSize = form.selectedSize.value; // 👕 FIX: read size from form
-
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/create-checkout-session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          product: selectedProduct,
-          quantity,
-          customerEmail: form.email.value,
-          shippingName: form.shippingName.value,
-          shippingAddressLine1: form.shippingAddressLine1.value,
-          shippingCity: form.shippingCity.value,
-          shippingState: form.shippingState.value,
-          shippingPostalCode: form.shippingPostalCode.value,
-          selectedSize, // 👕 now defined
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/create-checkout-session`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            product: selectedProduct,
+            quantity,
+            customerEmail: e.target.email.value,
+            shippingName: e.target.shippingName.value,
+            shippingAddressLine1: e.target.shippingAddressLine1.value,
+            shippingCity: e.target.shippingCity.value,
+            shippingState: e.target.shippingState.value,
+            shippingPostalCode: e.target.shippingPostalCode.value,
+            selectedSize, // 👕 comes from state
+          }),
+        }
+      );
 
       const data = await response.json();
       window.location.href = data.url;
@@ -85,18 +90,30 @@ const Checkout = () => {
 
           {selectedProduct && (
             <div className="product-preview">
-              <img src={selectedProduct.image} alt={selectedProduct.name} className="product-image" />
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.name}
+                className="product-image"
+              />
               <p>{selectedProduct.description}</p>
             </div>
           )}
 
-          {/* 👕 NEW SIZE SELECTOR */}
+          {/* 👕 SIZE SELECTOR bound to state */}
           {selectedProduct?.sizes && (
             <label className="checkout-label">
               Size:
-              <select name="selectedSize" required className="checkout-input">
+              <select
+                name="selectedSize"
+                value={selectedSize}
+                onChange={(e) => setSelectedSize(e.target.value)}
+                required
+                className="checkout-input"
+              >
                 {selectedProduct.sizes.map((size) => (
-                  <option key={size} value={size}>{size}</option>
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
                 ))}
               </select>
             </label>
@@ -117,32 +134,68 @@ const Checkout = () => {
 
           <label className="checkout-label">
             Email:
-            <input type="email" name="email" required placeholder="you@example.com" className="checkout-input" />
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="you@example.com"
+              className="checkout-input"
+            />
           </label>
 
           <label className="checkout-label">
             Full Name:
-            <input type="text" name="shippingName" required placeholder="John Doe" className="checkout-input" />
+            <input
+              type="text"
+              name="shippingName"
+              required
+              placeholder="John Doe"
+              className="checkout-input"
+            />
           </label>
 
           <label className="checkout-label">
             Street Address:
-            <input type="text" name="shippingAddressLine1" required placeholder="123 Main St" className="checkout-input" />
+            <input
+              type="text"
+              name="shippingAddressLine1"
+              required
+              placeholder="123 Main St"
+              className="checkout-input"
+            />
           </label>
 
           <label className="checkout-label">
             City:
-            <input type="text" name="shippingCity" required placeholder="Los Angeles" className="checkout-input" />
+            <input
+              type="text"
+              name="shippingCity"
+              required
+              placeholder="Los Angeles"
+              className="checkout-input"
+            />
           </label>
 
           <label className="checkout-label">
             State:
-            <input type="text" name="shippingState" required placeholder="CA" className="checkout-input" />
+            <input
+              type="text"
+              name="shippingState"
+              required
+              placeholder="CA"
+              className="checkout-input"
+            />
           </label>
 
           <label className="checkout-label">
             ZIP Code:
-            <input type="text" name="shippingPostalCode" required placeholder="90001" className="checkout-input" />
+            <input
+              type="text"
+              name="shippingPostalCode"
+              required
+              placeholder="90001"
+              className="checkout-input"
+            />
           </label>
 
           <button

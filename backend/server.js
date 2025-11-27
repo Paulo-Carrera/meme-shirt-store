@@ -96,8 +96,7 @@ app.post('/create-checkout-session', async (req, res) => {
 
     console.log('✅ Stripe session created:', session.id);
 
-    // Insert initial order (shipping left null until webhook)
-    await insertOrder({
+    const insertPayload = {
       product_id: product.id,
       product_name: product.name,
       product_size: selectedSize,
@@ -106,9 +105,17 @@ app.post('/create-checkout-session', async (req, res) => {
       status: 'initiated',
       email: customerEmail,
       stripe_session_id: session.id,
-      shipping_name: null,
-      shipping_address: null,
-    });
+      shipping_name: shippingName || null,
+      shipping_address: JSON.stringify({
+        line1: shippingAddressLine1 || null,
+        city: shippingCity || null,
+        state: shippingState || null,
+        postal_code: shippingPostalCode || null,
+      }),
+    };
+
+    console.log('📝 Supabase insert payload:', insertPayload);
+    await insertOrder(insertPayload);
 
     res.json({ url: session.url });
   } catch (err) {
@@ -142,13 +149,17 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const sessionId = session.id;
+    console.log('🔔 Webhook session object:', JSON.stringify(session, null, 2));
 
+    const sessionId = session.id;
     const email = session.customer_email || session.customer_details?.email || null;
     const product_name = session.metadata?.productName || null;
     const product_size = session.metadata?.productSize || null;
 
     const shipping = session.shipping_details;
+    console.log('👤 Stripe customer_details:', session.customer_details);
+    console.log('🏠 Stripe shipping_details:', shipping);
+
     const name = shipping?.name || session.metadata?.shippingName || null;
     const address =
       shipping?.address || {
@@ -158,10 +169,8 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
         postal_code: session.metadata?.shippingPostalCode || null,
       };
 
-    console.log('🔍 Session ID:', sessionId);
-    console.log('📦 Product:', product_name, '👕 Size:', product_size);
-    console.log('📧 Email:', email);
-    console.log('🏠 Shipping:', address);
+    console.log('✅ Parsed shipping name:', name);
+    console.log('✅ Parsed shipping address:', address);
 
     const { data: existingOrder } = await supabase
       .from('orders')
@@ -179,7 +188,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
         shipping_address: address ? JSON.stringify(address) : existingOrder.shipping_address,
       };
 
-      console.log('📝 Update payload:', updatePayload);
+      console.log('📝 Supabase update payload:', updatePayload);
 
       const { error: updateError } = await supabase
         .from('orders')
@@ -189,7 +198,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
       if (updateError) {
         console.error('❌ Supabase update error:', updateError.message);
       } else {
-        console.log('✅ Order updated with shipping details');
+        console.log('✅ Supabase order updated successfully');
       }
     } else {
       console.warn('⚠️ No matching order found for session:', sessionId);

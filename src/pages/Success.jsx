@@ -9,7 +9,9 @@ export default function Success() {
 
   useEffect(() => {
     async function fetchOrder() {
-      const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/order-details?session_id=${sessionId}`);
+      const res = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/order-details?session_id=${sessionId}`
+      );
       const data = await res.json();
       setOrder(data);
     }
@@ -30,10 +32,12 @@ export default function Success() {
     <div className="gradient-wrapper">
       <div className="star"></div>
       <div className="success-page receipt-box">
-        <h1>MoonLight</h1>
+        <h1>MemeThreads</h1>
         <h2>✅ Thank you for your order!</h2>
         <p><strong>Date:</strong> {formattedDate}</p>
         <p><strong>Product:</strong> {order.product_name}</p>
+        {/* 👕 Show size */}
+        <p><strong>Size:</strong> {order.product_size || 'Not specified'}</p>
         <p><strong>Quantity:</strong> {order.quantity}</p>
         <p><strong>Total Price:</strong> ${order.total_price?.toFixed(2) || 'N/A'}</p>
         <p><strong>Email:</strong> {order.email || 'Not provided'}</p>
@@ -41,13 +45,15 @@ export default function Success() {
         <p><strong>Shipping to:</strong> {order.shipping_name}</p>
 
         {order.shipping_address && (() => {
-          const address = typeof order.shipping_address === 'string'
-            ? JSON.parse(order.shipping_address)
-            : order.shipping_address;
+          const address =
+            typeof order.shipping_address === 'string'
+              ? JSON.parse(order.shipping_address)
+              : order.shipping_address;
 
           return (
             <p>
-              <strong>Address:</strong> {address.line1}, {address.city}, {address.state} {address.postal_code}
+              <strong>Address:</strong> {address.line1}, {address.city}, {address.state}{' '}
+              {address.postal_code}
             </p>
           );
         })()}

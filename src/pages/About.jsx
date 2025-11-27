@@ -3,10 +3,23 @@ export default function About() {
     <div className="gradient-wrapper">
       <div className="star"></div>
       <div className="page">
-        <h1>About MoonLight</h1>
-        <p>MoonLight is a glowing LED moon designed to transform any space into a calming, cosmic atmosphere. With its soft ambient glow and textured lunar surface, it brings a sense of wonder, warmth, and visual serenity to your environment—day or night.</p>
-        <p>Crafted for those who value both design and mood, MoonLight blends aesthetic impact with functional lighting. Whether used as a bedside lamp, creative accent, or gift, it’s built to elevate your space with a touch of the extraordinary.</p>
-        <p>Every MoonLight is powered by energy-efficient LEDs and designed for easy setup, making it a seamless addition to any room. It’s more than a lamp—it’s a statement of style, imagination, and atmosphere.</p>
+        <h1>About MemeThreads</h1>
+        <p>
+          MemeThreads is a creative experiment turned full-stack showcase — a store built to bring
+          internet humor to life through wearable art. Each shirt is designed with the same energy
+          that fuels viral memes: quick, clever, and made to spark a smile.
+        </p>
+        <p>
+          Crafted for those who love both style and laughter, MemeThreads blends sharp design with
+          everyday comfort. Whether you’re rocking a shirt at a party, gifting one to a friend, or
+          just flexing your favorite inside joke, it’s built to connect people through humor.
+        </p>
+        <p>
+          Every MemeThreads product is printed with care, backed by a streamlined checkout system,
+          and supported by a modern full-stack workflow. It’s more than just merch — it’s a
+          portfolio project, a creative playground, and a way to show that code and comedy can
+          collide in something people actually want to wear.
+        </p>
       </div>
     </div>
   );

@@ -17,8 +17,16 @@ const Checkout = () => {
   );
   const selectedProduct = products.find((p) => p.id === selectedProductId);
   const [quantity, setQuantity] = useState(initialQuantity);
-  const [selectedSize, setSelectedSize] = useState(initialSize); // 👕 track size in state
+  const [selectedSize, setSelectedSize] = useState(initialSize);
   const [loading, setLoading] = useState(false);
+
+  // 👇 shipping fields bound to state
+  const [email, setEmail] = useState('');
+  const [shippingName, setShippingName] = useState('');
+  const [shippingAddressLine1, setShippingAddressLine1] = useState('');
+  const [shippingCity, setShippingCity] = useState('');
+  const [shippingState, setShippingState] = useState('');
+  const [shippingPostalCode, setShippingPostalCode] = useState('');
 
   useEffect(() => {
     if (selectedProduct) {
@@ -37,22 +45,26 @@ const Checkout = () => {
     }, 100);
 
     try {
+      const payload = {
+        product: selectedProduct,
+        quantity,
+        customerEmail: email,
+        shippingName,
+        shippingAddressLine1,
+        shippingCity,
+        shippingState,
+        shippingPostalCode,
+        selectedSize,
+      };
+
+      console.log('🚀 Sending checkout payload:', payload);
+
       const response = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/create-checkout-session`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            product: selectedProduct,
-            quantity,
-            customerEmail: e.target.email.value,
-            shippingName: e.target.shippingName.value,
-            shippingAddressLine1: e.target.shippingAddressLine1.value,
-            shippingCity: e.target.shippingCity.value,
-            shippingState: e.target.shippingState.value,
-            shippingPostalCode: e.target.shippingPostalCode.value,
-            selectedSize, // 👕 comes from state
-          }),
+          body: JSON.stringify(payload),
         }
       );
 
@@ -99,7 +111,6 @@ const Checkout = () => {
             </div>
           )}
 
-          {/* 👕 SIZE SELECTOR bound to state */}
           {selectedProduct?.sizes && (
             <label className="checkout-label">
               Size:
@@ -139,6 +150,8 @@ const Checkout = () => {
               name="email"
               required
               placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="checkout-input"
             />
           </label>
@@ -150,6 +163,8 @@ const Checkout = () => {
               name="shippingName"
               required
               placeholder="John Doe"
+              value={shippingName}
+              onChange={(e) => setShippingName(e.target.value)}
               className="checkout-input"
             />
           </label>
@@ -161,6 +176,8 @@ const Checkout = () => {
               name="shippingAddressLine1"
               required
               placeholder="123 Main St"
+              value={shippingAddressLine1}
+              onChange={(e) => setShippingAddressLine1(e.target.value)}
               className="checkout-input"
             />
           </label>
@@ -172,6 +189,8 @@ const Checkout = () => {
               name="shippingCity"
               required
               placeholder="Los Angeles"
+              value={shippingCity}
+              onChange={(e) => setShippingCity(e.target.value)}
               className="checkout-input"
             />
           </label>
@@ -183,6 +202,8 @@ const Checkout = () => {
               name="shippingState"
               required
               placeholder="CA"
+              value={shippingState}
+              onChange={(e) => setShippingState(e.target.value)}
               className="checkout-input"
             />
           </label>
@@ -194,6 +215,8 @@ const Checkout = () => {
               name="shippingPostalCode"
               required
               placeholder="90001"
+              value={shippingPostalCode}
+              onChange={(e) => setShippingPostalCode(e.target.value)}
               className="checkout-input"
             />
           </label>

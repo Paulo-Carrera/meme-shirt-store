@@ -12,25 +12,23 @@ const supabase = getSupabaseClient();
 // ✅ CORS setup — supports multiple origins via env
 const allowedOrigins = process.env.FRONTEND_URL?.split(',') || [];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    console.log('🌐 Incoming origin:', origin);
-    console.log('✅ Allowed origins:', allowedOrigins);
-    if (
-      !origin ||
-      allowedOrigins.includes(origin) ||
-      origin.includes('vercel.app')
-    ) {
-      callback(null, true);
-    } else {
-      console.warn('❌ CORS blocked:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      console.log('🌐 Incoming origin:', origin);
+      console.log('✅ Allowed origins:', allowedOrigins);
+      if (!origin || allowedOrigins.includes(origin) || origin.includes('vercel.app')) {
+        callback(null, true);
+      } else {
+        console.warn('❌ CORS blocked:', origin);
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 app.options('/create-checkout-session', cors());
 
@@ -43,11 +41,6 @@ app.post('/create-checkout-session', async (req, res) => {
     product,
     quantity = 1,
     customerEmail,
-    shippingName,
-    shippingAddressLine1,
-    shippingCity,
-    shippingState,
-    shippingPostalCode,
     selectedSize, // 👕 added size support
   } = req.body;
 
@@ -55,11 +48,6 @@ app.post('/create-checkout-session', async (req, res) => {
     product,
     quantity,
     customerEmail,
-    shippingName,
-    shippingAddressLine1,
-    shippingCity,
-    shippingState,
-    shippingPostalCode,
     selectedSize,
   });
 
@@ -93,16 +81,12 @@ app.post('/create-checkout-session', async (req, res) => {
         productName: product.name,
         productSize: selectedSize,
         quantity: String(quantity),
-        shippingName,
-        shippingAddressLine1,
-        shippingCity,
-        shippingState,
-        shippingPostalCode,
       },
     });
 
     console.log('✅ Stripe session created:', session.id);
 
+    // Insert initial order with placeholder shipping info
     await insertOrder({
       product_id: product.id,
       product_name: product.name,
@@ -112,13 +96,8 @@ app.post('/create-checkout-session', async (req, res) => {
       status: 'initiated',
       email: customerEmail,
       stripe_session_id: session.id,
-      shipping_name: shippingName,
-      shipping_address: JSON.stringify({
-        line1: shippingAddressLine1,
-        city: shippingCity,
-        state: shippingState,
-        postal_code: shippingPostalCode,
-      }),
+      shipping_name: null,
+      shipping_address: null,
     });
 
     res.json({ url: session.url });
@@ -164,17 +143,15 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
     const product_name = session.metadata?.productName || 'unknown';
     const product_size = session.metadata?.productSize || 'unknown';
 
-    const name = session.metadata?.shippingName;
-    const address = {
-      line1: session.metadata?.shippingAddressLine1,
-      city: session.metadata?.shippingCity,
-      state: session.metadata?.shippingState,
-      postal_code: session.metadata?.shippingPostalCode,
-    };
+    // ✅ Pull shipping details from Stripe
+    const shipping = session.shipping_details;
+    const name = shipping?.name || null;
+    const address = shipping?.address || null;
 
     console.log('🔍 Session ID:', sessionId);
     console.log('📦 Product:', product_name, '👕 Size:', product_size);
     console.log('📧 Email:', email);
+    console.log('🏠 Shipping:', address);
 
     const { data: existingOrder, error: fetchError } = await supabase
       .from('orders')
@@ -193,7 +170,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
         product_name,
         product_size,
         shipping_name: name,
-        shipping_address: JSON.stringify(address),
+        shipping_address: address ? JSON.stringify(address) : null,
       };
 
       console.log('📝 Update payload:', updatePayload);
@@ -206,7 +183,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (req, res)
       if (updateError) {
         console.error('❌ Supabase update error:', updateError.message);
       } else {
-        console.log('✅ Order updated to completed');
+        console.log('✅ Order updated to completed with shipping details');
       }
     } else {
       console.warn('⚠️ No matching order found for session:', sessionId);

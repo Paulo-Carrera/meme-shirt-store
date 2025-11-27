@@ -16,14 +16,14 @@
   position: relative;
 }
 
-.success-page::before {
+/* .success-page::before {
   content: '🌕';
   position: absolute;
   top: -1.2rem;
   right: -1.2rem;
   font-size: 2rem;
   filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
-}
+} */
 
 .success-page h1 {
   text-align: center;

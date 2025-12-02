@@ -106,12 +106,10 @@ app.post('/create-checkout-session', async (req, res) => {
       email: customerEmail,
       stripe_session_id: session.id,
       shipping_name: shippingName,
-      shipping_address: JSON.stringify({
-        line1: shippingAddressLine1,
-        city: shippingCity,
-        state: shippingState,
-        postal_code: shippingPostalCode,
-      }),
+      shipping_address_line1: shippingAddressLine1,
+      shipping_city: shippingCity,
+      shipping_state: shippingState,
+      shipping_postal_code: shippingPostalCode,
     };
 
     console.log('📝 Supabase insert payload:', insertPayload);

@@ -21,8 +21,9 @@ export default function Success() {
 
   if (!order) return <p>Loading order details...</p>;
 
-  const formattedDate = order.timestamp
-    ? new Date(order.timestamp).toLocaleString('en-US', {
+  // ✅ Use created_at instead of timestamp
+  const formattedDate = order.created_at
+    ? new Date(order.created_at).toLocaleString('en-US', {
         dateStyle: 'medium',
         timeStyle: 'short',
       })

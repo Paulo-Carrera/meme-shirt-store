@@ -54,7 +54,7 @@ const styles = {
     display: 'block',
     width: '100%',
     padding: '0.9rem',
-    backgroundColor: '#3a0066',
+    backgroundColor: '#000000ff',
     color: '#fff',
     fontSize: '1.1rem',
     border: 'none',
@@ -62,7 +62,7 @@ const styles = {
     cursor: 'pointer',
     textAlign: 'center',
     textDecoration: 'none',
-    boxShadow: '0 0 10px rgba(58, 0, 102, 0.6)',
+    boxShadow: '0 0 10px rgba(0, 0, 0, 0.3)',
     transition: 'all 0.3s ease',
   },
 };

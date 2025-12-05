@@ -26,6 +26,7 @@ export default function Success() {
     ? new Date(order.created_at).toLocaleString('en-US', {
         dateStyle: 'medium',
         timeStyle: 'short',
+        timeZone:'America/Los_Angeles'
       })
     : 'Not available';
 
@@ -59,7 +60,6 @@ export default function Success() {
           );
         })()}
 
-        <p><small><strong>Check email for confirmation.</strong></small></p>
         <a href="/">Back to home</a>
       </div>
     </div>
